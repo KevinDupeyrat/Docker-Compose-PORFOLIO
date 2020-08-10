@@ -1,12 +1,27 @@
-version: "3"
+version: '3'
 
-backend:
-    container_name: "backen"
-    restart: always
-    image: docker.pkg.github.com/kevindupeyrat/portfolio-server/portfolio-server-docker-image:test-docker-compose-01
-    ports: 8443:8443
-
-frontend:
-    container_name: "frontend"
-    image: docker.pkg.github.com/kevindupeyrat/portfolio-ui/portfolio-ui-docker-image:test-docker-compose-01
-    ports: 4200:4200
+services: 
+    db:
+        container_name: "portfolioDB"
+        image: mongo:latest
+        volumes: 
+            - /Users/dupeyrat/MongoData/:/data/db
+        restart: always
+    frontend:
+        container_name: "frontend"
+        image: docker.pkg.github.com/kevindupeyrat/portfolio-ui/portfolio-ui-docker-image:test-docker-compose-01
+        ports: 
+            - 4200:4200
+            - 80:80
+        networks: 
+            - app-network
+    backend:
+        depends_on:
+            - db
+        container_name: "backen"
+        image: docker.pkg.github.com/kevindupeyrat/portfolio-server/portfolio-server-docker-image:test-docker-compose-04
+        ports: 
+            - 8443:8443
+networks: 
+    app-network:
+        driver: bridge
